@@ -1,74 +1,78 @@
 <div align="center">
 
-<a href="https://www.sofa-framework.org/"><img src="https://www.sofa-framework.org/wp-content/uploads/2013/01/SOFA_LOGO_ORANGE_2-normal.png" alt="SOFA Framework" height="85"/></a>
-&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://stereokit.net/"><img src="https://github.com/StereoKit/StereoKit/blob/master/tools/img/StereoKitWideBackground.svg" alt="StereoKit" height="85"/></a>
+# SURA
 
-[![SOFA](https://img.shields.io/badge/SOFA-simulation-orange.svg)](https://github.com/sofa-framework/sofa)
-[![StereoKit](https://img.shields.io/badge/StereoKit-XR-blueviolet.svg)](https://github.com/StereoKit/StereoKit)
-[![OpenXR](https://img.shields.io/badge/OpenXR-ready-brightgreen.svg)](https://www.khronos.org/openxr/)
-[![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)]()
+[![OGRE](https://img.shields.io/badge/OGRE-3D-red.svg)](https://github.com/OGRECave/ogre)
+[![C++](https://img.shields.io/badge/C%2B%2B-23-blue.svg)](https://en.cppreference.com/w/cpp/23)
+[![Status](https://img.shields.io/badge/status-active-brightgreen.svg)]()
 
 </div>
 
-**SofaStereoKit** is a binding layer between [SOFA](https://github.com/sofa-framework/sofa) and [StereoKit](https://github.com/StereoKit/StereoKit). **SOFA** provides real-time physics simulation, with an emphasis on medical simulation, robotics, deformable bodies, FEM, constraints, solvers, and collision models. **StereoKit** provides a lightweight OpenXR application framework for building mixed reality, virtual reality, and spatial computing experiences in C#.
+A simulation application in C++23, built on [OGRE (Object-Oriented Graphics Rendering Engine)](https://github.com/OGRECave/ogre)
+for rendering and presentation.
 
-SofaStereoKit connects both worlds:
+**OGRE owns everything visual**: the window, the GPU device, the scene graph, materials,
+lighting, and the frame loop. The simulation side is a separate, swappable layer behind a
+narrow bridge — see [AGENTS.md](AGENTS.md) section 2 for the boundary rules.
 
-- SOFA computes the simulation
-- StereoKit renders the scene in XR
-- StereoKit input can interact with SOFA objects
-- SOFA scenes becomes immersive medical and robotic simulations
-
-## Repository layout
-
-```text
-SofaStereoKit/
-├─ src/
-│  ├─ native/      # SOFA native bridge
-│  ├─ csharp/      # C# bindings for StereoKit
-│  └─ interop/     # shared interop types
-├─ samples/        # StereoKit samples
-├─ LICENSE
-└─ README.md
-```
+> **Status:** The rendering front end is powered by OGRE. **The physics engine has not been chosen yet** — the seam where it plugs in is marked in `src/app/main.cpp`.
 
 ## Requirements
 
-- [SOFA Binaries](https://github.com/sofa-framework/sofa/releases) 
-- [StereoKit Source code](https://github.com/StereoKit/StereoKit/releases)
-- CMake
-- C++ compiler
-- .NET SDK
+- CMake 3.22+
+- A C++23 compiler (MSVC 14.4x / GCC 13+ / Clang 17+)
+- Git
+
+On Windows, CMake ships inside Visual Studio.
 
 ## Build
 
-```bash
-git clone https://github.com/YOUR_USERNAME/SofaStereoKit.git
-cd SofaStereoKit
+Dependencies are **automatically fetched and vendored** into `third_party/` at configure time.
+The latest release from [OGRECave/ogre releases](https://github.com/OGRECave/ogre/releases) is resolved and checked out automatically.
 
-cmake -B build -S . -DSOFA_ROOT=/path/to/sofa
+```bash
+cmake -B build
 cmake --build build --config Release
 ```
 
-## References
+Run it:
 
-- [SOFA Framework](https://www.sofa-framework.org/)
-- [SOFA GitHub](https://github.com/sofa-framework/sofa)
-- [SOFA Documentation](https://www.sofa-framework.org/community/doc/)
-- [StereoKit Website](https://stereokit.net/)
-- [StereoKit GitHub](https://github.com/StereoKit/StereoKit)
+```bash
+cmake --build build --config Release --target run
+```
+
+### Dependency Options
+
+- `-DSURA_OGRE_TAG=latest`: (default) Resolves and grabs the latest release from https://github.com/OGRECave/ogre/releases
+- `-DSURA_OGRE_TAG=<tag>`: Pin to a specific version (e.g. `v14.6.0`)
+- `-DSURA_BULLET_TAG=<ref>`: Bullet Physics branch/tag/commit (default: `master`)
+- `-DSURA_PBD_TAG=<ref>`: Position Based Dynamics branch/tag/commit (default: `main`)
+- `-DSURA_NETGEN_TAG=<ref>`: Netgen mesh generator branch/tag/commit (default: `master`)
+- `-DSURA_UPDATE_DEPS=ON`: Force re-checking and updating vendored dependencies
+
+## Repository Layout
+
+```text
+├─ CMakeLists.txt          # minimal project and application target
+├─ cmake/
+│  ├─ SuraDependencies.cmake    # centralized dependency management & vendoring
+│  ├─ DependencyOptions.cmake   # dependency options, set before add_subdirectory
+│  ├─ FindBullet.cmake          # find module for Bullet targets
+│  └─ VendorDeps.cmake          # clone/update helper querying latest release
+├─ src/
+│  ├─ CMakeLists.txt
+│  └─ app/
+│     └─ main.cpp          # entry point, frame loop, physics seam
+├─ third_party/            # vendored dependencies (gitignored)
+└─ AGENTS.md               # architecture rules and conventions
+```
 
 ## License
 
-This project must define its own license.
-
-SOFA and StereoKit keep their own licenses. Please review their license terms before redistributing binaries or integrating this project into commercial software.
-
-### Contact
-contact@healsimulations.com
+Apache-2.0 (see [LICENSE](LICENSE)). Dependency licenses are their own — OGRE is MIT.
 
 -----------------------------------------------------------------------------
 
-HEAL Simularions, Inc.  
-(c) 2026 SIOKOS IOANNIS
+HEAL Simulations, Inc.  
+(c) 2026 IOANNIS SIOKOS
+

@@ -1,0 +1,35 @@
+# Build trees
+build/
+build-*/
+out/
+_deps/
+
+# Vendored dependencies. These are cloned by CMake into third_party/ at the tags
+# pinned in CMakeLists.txt (SURA_OGRE_TAG and friends). They are
+# reproducible from those tags and must not be committed.
+third_party/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeUserPresets.json
+cmake_install.cmake
+install_manifest.txt
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.user
+
+# MSVC build artefacts
+*.obj
+*.pdb
+*.ilk
+*.idb
+*.exp
+*.lib
+
